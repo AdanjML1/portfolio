@@ -1,0 +1,10 @@
+# Cursor (skills y config local — no van al deploy)
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*~

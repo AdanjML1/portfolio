@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Portfolio — Adán</title>
+<meta name="description" content="Portfolio cinematográfico con scroll, parallax y capítulos por proyecto." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" crossorigin="anonymous"></script>
+
+<style>
+  :root {
+    --bg: #f4efe6;
+    --fg: #14110f;
+    --fg-muted: #5c534c;
+    --accent: #e8a317;
+    --panel: #fffdf9;
+    --line: rgba(20, 17, 15, 0.12);
+    --display: "Instrument Serif", Georgia, serif;
+    --ui: "DM Sans", system-ui, sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--ui);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background 0.6s var(--ease);
+  }
+  ::selection { background: var(--accent); color: var(--fg); }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+
+  /* ── Nav ── */
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: clamp(14px, 2vw, 22px) clamp(18px, 4vw, 48px);
+    padding-top: max(14px, env(safe-area-inset-top));
+    mix-blend-mode: difference;
+    color: #fff;
+  }
+  .nav__mark {
+    font-family: var(--display);
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .nav__links {
+    display: flex;
+    gap: clamp(10px, 2vw, 24px);
+    list-style: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .nav__links a {
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.25s;
+  }
+  .nav__links a:hover { opacity: 1; }
+  @media (max-width: 680px) {
+    .nav__links li:not(:last-child) { display: none; }
+  }
+
+  /* ── Progress rail ── */
+  .rail {
+    position: fixed;
+    right: clamp(12px, 2vw, 28px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rail button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--ui);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg);
+    opacity: 0.35;
+    transition: opacity 0.3s;
+  }
+  .rail button .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    transition: transform 0.3s, background 0.3s;
+  }
+  .rail button.on { opacity: 1; }
+  .rail button.on .dot {
+    transform: scale(1.45);
+    background: var(--fg);
+  }
+  @media (max-width: 680px) { .rail { display: none; } }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    min-height: 220vh;
+  }
+  .hero__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    align-content: center;
+    padding: 0 clamp(20px, 6vw, 96px);
+  }
+  .hero__ghost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--display);
+    font-size: clamp(6rem, 22vw, 18rem);
+    line-height: 0.85;
+    color: #fff;
+    opacity: 0.08;
+    white-space: nowrap;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .hero__plane {
+    position: absolute;
+    inset: -10% 0;
+    will-change: transform;
+    pointer-events: none;
+  }
+  .hero__plane--back {
+    z-index: 1;
+    background: radial-gradient(90% 70% at 20% 10%, rgba(255, 255, 255, 0.35), transparent 55%);
+  }
+  .hero__float {
+    position: absolute;
+    z-index: 3;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px -30px rgba(20, 17, 15, 0.45);
+    will-change: transform;
+  }
+  .hero__float img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .hero__float--a {
+    width: clamp(140px, 18vw, 220px);
+    aspect-ratio: 4/5;
+    right: clamp(8%, 14vw, 18%);
+    top: 18%;
+  }
+  .hero__float--b {
+    width: clamp(100px, 12vw, 160px);
+    aspect-ratio: 1;
+    left: clamp(6%, 10vw, 14%);
+    bottom: 16%;
+  }
+  .hero__shadow {
+    position: absolute;
+    z-index: 2;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(20, 17, 15, 0.28), transparent 70%);
+    filter: blur(8px);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .hero__copy {
+    position: relative;
+    z-index: 5;
+    max-width: min(92vw, 720px);
+    will-change: transform, opacity;
+  }
+  .hero__eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--panel);
+    margin-bottom: clamp(16px, 2vw, 24px);
+  }
+  .hero__title {
+    font-family: var(--display);
+    font-size: clamp(2.8rem, 9vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+  .hero__title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero__lede {
+    margin-top: clamp(18px, 2.5vw, 28px);
+    max-width: 42ch;
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    line-height: 1.55;
+    color: var(--fg-muted);
+  }
+
+  /* ── Horizontal gallery ── */
+  .gallery {
+    position: relative;
+    height: 320vh;
+    background: var(--panel);
+  }
+  .gallery__pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: grid;
+    align-content: center;
+    gap: clamp(24px, 4vw, 40px);
+    overflow: hidden;
+    padding: clamp(20px, 4vw, 48px) 0;
+  }
+  .gallery__head {
+    padding-inline: clamp(20px, 6vw, 96px);
+  }
+  .gallery__head h2 {
+    font-family: var(--display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+  }
+  .gallery__head p {
+    margin-top: 12px;
+    color: var(--fg-muted);
+    max-width: 40ch;
+  }
+  .gallery__track {
+    display: flex;
+    gap: clamp(16px, 2.5vw, 28px);
+    padding-inline: clamp(20px, 6vw, 96px);
+    will-change: transform;
+  }
+  .project-card {
+    flex: 0 0 min(82vw, 340px);
+    text-decoration: none;
+    color: inherit;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    transition: transform 0.35s var(--ease);
+    scroll-snap-align: start;
+  }
+  .project-card:hover { transform: translateY(-4px); }
+  .project-card__img {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+  }
+  .project-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease);
+  }
+  .project-card:hover .project-card__img img { transform: scale(1.04); }
+  .project-card__body { padding: 18px 20px 22px; }
+  .project-card__idx {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .project-card__title {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    margin-top: 6px;
+    line-height: 1.1;
+  }
+  .project-card__tags {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--fg-muted);
+  }
+
+  /* ── Project chapters (Delassus-style worlds) ── */
+  .chapter {
+    position: relative;
+    min-height: 240vh;
+    --chapter-bg: #e8a317;
+    --chapter-fg: #14110f;
+    --chapter-accent: #fff5d6;
+  }
+  .chapter__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: clamp(20px, 4vw, 48px);
+    padding: 0 clamp(20px, 6vw, 96px);
+  }
+  .chapter__ghost {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--display);
+    font-size: clamp(5rem, 18vw, 14rem);
+    color: #fff;
+    opacity: 0.12;
+    white-space: nowrap;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .chapter__copy {
+    position: relative;
+    z-index: 5;
+    will-change: transform, opacity;
+  }
+  .chapter__num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .chapter__title {
+    font-family: var(--display);
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-top: 12px;
+    color: var(--chapter-fg);
+  }
+  .chapter__desc {
+    margin-top: clamp(16px, 2vw, 24px);
+    max-width: 38ch;
+    font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    line-height: 1.6;
+    color: var(--chapter-fg);
+    opacity: 0.82;
+  }
+  .chapter__meta {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chapter__meta span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.22);
+    color: var(--chapter-fg);
+  }
+  .chapter__visual {
+    position: relative;
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    will-change: transform;
+  }
+  .chapter__scene {
+    position: relative;
+    width: min(100%, 420px);
+    aspect-ratio: 4/5;
+  }
+  .chapter__main {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.35);
+    will-change: transform;
+  }
+  .chapter__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .chapter__accent-img {
+    position: absolute;
+    z-index: 3;
+    width: 38%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.4);
+    will-change: transform;
+  }
+  .chapter__accent-img--tl { top: -8%; left: -10%; }
+  .chapter__accent-img--br { bottom: -6%; right: -8%; }
+  .chapter__floor {
+    position: absolute;
+    z-index: 1;
+    left: 10%;
+    right: 10%;
+    bottom: -6%;
+    height: 18%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.22), transparent 70%);
+    filter: blur(10px);
+    will-change: transform;
+  }
+
+  .chapter--mint {
+    --chapter-bg: #2d8f7b;
+    --chapter-fg: #f2fff9;
+    --chapter-accent: #b8f0e4;
+  }
+  .chapter--violet {
+    --chapter-bg: #5b3fd4;
+    --chapter-fg: #f8f5ff;
+    --chapter-accent: #d4c8ff;
+  }
+  .chapter--amber {
+    --chapter-bg: #e8a317;
+    --chapter-fg: #1a1408;
+    --chapter-accent: #fff3c4;
+  }
+
+  /* ── About / contact ── */
+  .footer {
+    padding: clamp(80px, 12vw, 140px) clamp(20px, 6vw, 96px);
+    background: var(--fg);
+    color: #f4efe6;
+  }
+  .footer h2 {
+    font-family: var(--display);
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .footer p {
+    margin-top: 20px;
+    max-width: 42ch;
+    line-height: 1.6;
+    opacity: 0.78;
+  }
+  .footer__links {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer__links a {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 999px;
+    border: 1px solid rgba(244, 239, 230, 0.35);
+    transition: background 0.25s, color 0.25s;
+  }
+  .footer__links a:hover {
+    background: #f4efe6;
+    color: var(--fg);
+  }
+  .footer__note {
+    margin-top: 48px;
+    font-size: 0.75rem;
+    opacity: 0.45;
+  }
+
+  /* ── Mobile / reduced motion ── */
+  @media (max-width: 768px) {
+    .chapter__stage {
+      grid-template-columns: 1fr;
+      align-content: center;
+      padding-top: 80px;
+    }
+    .chapter__visual { order: -1; }
+    .chapter__scene { width: min(88vw, 320px); }
+    .hero__float--a { right: 4%; top: 10%; width: 120px; }
+    .hero__float--b { display: none; }
+
+    .gallery { height: auto; }
+    .gallery__pin { position: static; height: auto; overflow: visible; }
+    .gallery__track {
+      transform: none !important;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__plane,
+    .hero__float,
+    .hero__shadow,
+    .chapter__ghost,
+    .chapter__main,
+    .chapter__accent-img,
+    .gallery__track {
+      transform: none !important;
+      will-change: auto;
+    }
+    .gallery { height: auto; }
+    .gallery__pin { position: static; height: auto; }
+    .gallery__track {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" aria-label="Navegación principal">
+  <a class="nav__mark" href="#">Adán</a>
+  <ul class="nav__links">
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#proyecto-01">Trabajo</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</header>
+
+<nav class="rail" aria-label="Capítulos">
+  <button type="button" data-target="#inicio" class="on"><span class="dot"></span>Inicio</button>
+  <button type="button" data-target="#proyectos"><span class="dot"></span>Proyectos</button>
+  <button type="button" data-target="#proyecto-01"><span class="dot"></span>01</button>
+  <button type="button" data-target="#proyecto-02"><span class="dot"></span>02</button>
+  <button type="button" data-target="#proyecto-03"><span class="dot"></span>03</button>
+  <button type="button" data-target="#contacto"><span class="dot"></span>Contacto</button>
+</nav>
+
+<main>
+  <!-- Hero -->
+  <section class="hero" id="inicio" data-bg="#f4efe6" aria-labelledby="hero-title">
+    <div class="hero__stage">
+      <p class="hero__ghost" data-depth="0.35" aria-hidden="true">portfolio</p>
+      <div class="hero__plane hero__plane--back" data-depth="0.18" aria-hidden="true"></div>
+
+      <div class="hero__float hero__float--a" data-depth="0.72" data-mouse="14">
+        <img src="https://picsum.photos/seed/hero-a/440/550" alt="" width="440" height="550" loading="eager" />
+      </div>
+      <div class="hero__float hero__float--b" data-depth="1.1" data-mouse="22">
+        <img src="https://picsum.photos/seed/hero-b/320/320" alt="" width="320" height="320" loading="eager" />
+      </div>
+      <div class="hero__shadow" data-depth="0.5" style="width:180px;height:40px;right:18%;bottom:22%;" aria-hidden="true"></div>
+
+      <div class="hero__copy" data-scroll-fade>
+        <p class="hero__eyebrow">Desarrollador · Diseño web</p>
+        <h1 class="hero__title" id="hero-title">Creo experiencias <em>digitales</em> con profundidad.</h1>
+        <p class="hero__lede">Portfolio en construcción. Cada proyecto es un capítulo con identidad propia — scroll, parallax y color. Las imágenes son placeholders hasta que subas las tuyas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Horizontal gallery -->
+  <section class="gallery" id="proyectos" data-bg="#fffdf9" aria-labelledby="gallery-title">
+    <div class="gallery__pin">
+      <header class="gallery__head">
+        <p class="hero__eyebrow" style="margin-bottom:14px;">Selección</p>
+        <h2 id="gallery-title">Proyectos que cuentan una historia.</h2>
+        <p>Desliza hacia abajo — la galería se mueve en horizontal, estilo carrusel editorial.</p>
+      </header>
+      <div class="gallery__track" role="list" aria-label="Proyectos">
+        <a class="project-card" role="listitem" href="#proyecto-01">
+          <div class="project-card__img">
+            <img src="https://picsum.photos/seed/proj-ui/680/510" alt="" width="680" height="510" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <p class="project-card__idx">01 · Interface</p>
+            <h3 class="project-card__title">Aurora UI</h3>
+            <p class="project-card__tags">React · Design system</p>
+          </div>
+        </a>
+        <a class="project-card" role="listitem" href="#proyecto-02">
+          <div class="project-card__img">
+            <img src="https://picsum.photos/seed/proj-brand/680/510" alt="" width="680" height="510" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <p class="project-card__idx">02 · Brand</p>
+            <h3 class="project-card__title">Verde Studio</h3>
+            <p class="project-card__tags">Identidad · Web</p>
+          </div>
+        </a>
+        <a class="project-card" role="listitem" href="#proyecto-03">
+          <div class="project-card__img">
+            <img src="https://picsum.photos/seed/proj-app/680/510" alt="" width="680" height="510" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <p class="project-card__idx">03 · Product</p>
+            <h3 class="project-card__title">Nebula App</h3>
+            <p class="project-card__tags">Mobile · UX</p>
+          </div>
+        </a>
+        <a class="project-card" role="listitem" href="#contacto">
+          <div class="project-card__img" style="background:linear-gradient(135deg,#14110f,#5c534c);display:grid;place-items:center;">
+            <span style="font-family:var(--display);font-size:2rem;color:#f4efe6;padding:24px;text-align:center;">¿Hablamos?</span>
+          </div>
+          <div class="project-card__body">
+            <p class="project-card__idx">→</p>
+            <h3 class="project-card__title">Contacto</h3>
+            <p class="project-card__tags">Disponible para proyectos</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 01 — amber / citrus vibe -->
+  <section class="chapter chapter--amber" id="proyecto-01" data-bg="#e8a317" aria-labelledby="ch1-title">
+    <div class="chapter__stage">
+      <p class="chapter__ghost" data-depth="0.4" aria-hidden="true">aurora</p>
+      <div class="chapter__copy" data-scroll-fade>
+        <p class="chapter__num">Proyecto 01</p>
+        <h2 class="chapter__title" id="ch1-title">Aurora UI</h2>
+        <p class="chapter__desc">Sistema de diseño y dashboard para una startup fintech. Interfaz clara, tipografía editorial y micro-interacciones suaves.</p>
+        <div class="chapter__meta">
+          <span>React</span><span>TypeScript</span><span>Figma</span>
+        </div>
+      </div>
+      <div class="chapter__visual" data-mouse="10">
+        <div class="chapter__scene">
+          <div class="chapter__floor" data-depth="0.3" aria-hidden="true"></div>
+          <div class="chapter__accent-img chapter__accent-img--tl" data-depth="0.85" data-mouse="18">
+            <img src="https://picsum.photos/seed/aurora-detail/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+          <div class="chapter__main" data-depth="0.65" data-mouse="12">
+            <img src="https://picsum.photos/seed/aurora-main/840/1050" alt="Vista principal del proyecto Aurora UI (placeholder)" width="840" height="1050" loading="lazy" />
+          </div>
+          <div class="chapter__accent-img chapter__accent-img--br" data-depth="1.15" data-mouse="24">
+            <img src="https://picsum.photos/seed/aurora-accent/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 02 — mint -->
+  <section class="chapter chapter--mint" id="proyecto-02" data-bg="#2d8f7b" aria-labelledby="ch2-title">
+    <div class="chapter__stage">
+      <p class="chapter__ghost" data-depth="0.4" aria-hidden="true">verde</p>
+      <div class="chapter__copy" data-scroll-fade>
+        <p class="chapter__num">Proyecto 02</p>
+        <h2 class="chapter__title" id="ch2-title">Verde Studio</h2>
+        <p class="chapter__desc">Rebranding y sitio web para un estudio creativo. Paleta orgánica, scroll narrativo y galería de casos.</p>
+        <div class="chapter__meta">
+          <span>Branding</span><span>GSAP</span><span>Web</span>
+        </div>
+      </div>
+      <div class="chapter__visual" data-mouse="10">
+        <div class="chapter__scene">
+          <div class="chapter__floor" data-depth="0.3" aria-hidden="true"></div>
+          <div class="chapter__accent-img chapter__accent-img--tl" data-depth="0.85" data-mouse="18">
+            <img src="https://picsum.photos/seed/verde-detail/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+          <div class="chapter__main" data-depth="0.65" data-mouse="12">
+            <img src="https://picsum.photos/seed/verde-main/840/1050" alt="Vista principal del proyecto Verde Studio (placeholder)" width="840" height="1050" loading="lazy" />
+          </div>
+          <div class="chapter__accent-img chapter__accent-img--br" data-depth="1.15" data-mouse="24">
+            <img src="https://picsum.photos/seed/verde-accent/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 03 — violet -->
+  <section class="chapter chapter--violet" id="proyecto-03" data-bg="#5b3fd4" aria-labelledby="ch3-title">
+    <div class="chapter__stage">
+      <p class="chapter__ghost" data-depth="0.4" aria-hidden="true">nebula</p>
+      <div class="chapter__copy" data-scroll-fade>
+        <p class="chapter__num">Proyecto 03</p>
+        <h2 class="chapter__title" id="ch3-title">Nebula App</h2>
+        <p class="chapter__desc">App de productividad con onboarding animado y componentes accesibles. Enfoque en claridad y ritmo visual.</p>
+        <div class="chapter__meta">
+          <span>React Native</span><span>UX</span><span>Motion</span>
+        </div>
+      </div>
+      <div class="chapter__visual" data-mouse="10">
+        <div class="chapter__scene">
+          <div class="chapter__floor" data-depth="0.3" aria-hidden="true"></div>
+          <div class="chapter__accent-img chapter__accent-img--tl" data-depth="0.85" data-mouse="18">
+            <img src="https://picsum.photos/seed/nebula-detail/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+          <div class="chapter__main" data-depth="0.65" data-mouse="12">
+            <img src="https://picsum.photos/seed/nebula-main/840/1050" alt="Vista principal del proyecto Nebula App (placeholder)" width="840" height="1050" loading="lazy" />
+          </div>
+          <div class="chapter__accent-img chapter__accent-img--br" data-depth="1.15" data-mouse="24">
+            <img src="https://picsum.photos/seed/nebula-accent/280/280" alt="" width="280" height="280" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="contacto" data-bg="#14110f">
+  <h2>Hablemos de tu próximo proyecto.</h2>
+  <p>Estoy construyendo este portfolio capítulo a capítulo. Cuando tengas capturas reales, sustituimos los placeholders de picsum por tus imágenes en <code>assets/</code>.</p>
+  <div class="footer__links">
+    <a href="mailto:hola@ejemplo.com">Email</a>
+    <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  </div>
+  <p class="footer__note">Hecho con cinematic-scroll · Sin vídeo · Imágenes genéricas temporales</p>
+</footer>
+
+<script>
+(function () {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const mobile = matchMedia("(max-width: 768px)");
+  const finePointer = matchMedia("(hover: hover) and (pointer: fine)");
+
+  /* ── Background morph between sections ── */
+  const sections = [...document.querySelectorAll("[data-bg]")];
+  const ioBg = new IntersectionObserver((entries) => {
+    const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (visible) document.body.style.background = visible.target.dataset.bg;
+  }, { threshold: [0.2, 0.45, 0.7] });
+  sections.forEach((s) => ioBg.observe(s));
+
+  /* ── Rail scroll-spy + click ── */
+  const railBtns = [...document.querySelectorAll(".rail button")];
+  const spyTargets = railBtns.map((b) => document.querySelector(b.dataset.target)).filter(Boolean);
+  const ioSpy = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const idx = spyTargets.indexOf(e.target);
+      if (idx < 0) return;
+      railBtns.forEach((b, i) => b.classList.toggle("on", i === idx));
+    });
+  }, { threshold: 0.45 });
+  spyTargets.forEach((t) => ioSpy.observe(t));
+  railBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const el = document.querySelector(btn.dataset.target);
+      if (el) el.scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth" });
+    });
+  });
+
+  /* ── Horizontal gallery scrub ── */
+  const gallery = document.getElementById("proyectos");
+  const track = gallery?.querySelector(".gallery__track");
+  function galleryTravel() {
+    return track ? Math.max(0, track.scrollWidth - track.clientWidth) : 0;
+  }
+  function scrubGallery() {
+    if (!gallery || !track || reduce.matches || mobile.matches) return;
+    const span = gallery.offsetHeight - window.innerHeight;
+    const p = span > 0 ? Math.min(1, Math.max(0, (window.scrollY - gallery.offsetTop) / span)) : 0;
+    track.style.transform = "translate3d(" + (-p * galleryTravel()) + "px,0,0)";
+  }
+
+  /* ── Chapter + hero parallax on scroll ── */
+  const depthEls = [...document.querySelectorAll("[data-depth]")];
+  const fadeEls = [...document.querySelectorAll("[data-scroll-fade]")];
+
+  function chapterProgress(section) {
+    const rect = section.getBoundingClientRect();
+    const span = section.offsetHeight - window.innerHeight;
+    if (span <= 0) return 0;
+    return Math.min(1, Math.max(0, -rect.top / span));
+  }
+
+  let ticking = false;
+  function onScrollFrame() {
+    ticking = false;
+    if (reduce.matches) return;
+
+    scrubGallery();
+
+    depthEls.forEach((el) => {
+      const section = el.closest("section");
+      if (!section) return;
+      const d = parseFloat(el.dataset.depth);
+      const p = chapterProgress(section);
+      const base = -p * window.innerHeight * d * 0.14;
+      const mx = parseFloat(el.dataset.mx || 0);
+      const my = parseFloat(el.dataset.my || 0);
+      el.style.transform = "translate3d(" + mx + "px," + (base + my) + "px,0)";
+    });
+
+    fadeEls.forEach((el) => {
+      const section = el.closest("section");
+      if (!section) return;
+      const p = chapterProgress(section);
+      const opacity = Math.min(1, Math.max(0.15, 0.15 + p * 1.1));
+      const y = (1 - Math.min(1, p * 1.4)) * 48;
+      el.style.opacity = opacity;
+      el.style.transform = "translate3d(0," + y + "px,0)";
+    });
+  }
+  function onScroll() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(onScrollFrame);
+    }
+  }
+
+  /* ── Mouse parallax (Delassus-style float) ── */
+  let mouseX = 0;
+  let mouseY = 0;
+  let mouseRaf = 0;
+  const mouseEls = [...document.querySelectorAll("[data-mouse]")];
+
+  function applyMouse() {
+    mouseRaf = 0;
+    if (!finePointer.matches || reduce.matches) return;
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const nx = (mouseX - cx) / cx;
+    const ny = (mouseY - cy) / cy;
+    mouseEls.forEach((el) => {
+      const strength = parseFloat(el.dataset.mouse) || 10;
+      el.dataset.mx = (nx * strength).toFixed(2);
+      el.dataset.my = (ny * strength * 0.7).toFixed(2);
+    });
+    onScrollFrame();
+  }
+
+  window.addEventListener("pointermove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (!mouseRaf) mouseRaf = requestAnimationFrame(applyMouse);
+  }, { passive: true });
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", () => { onScrollFrame(); }, { passive: true });
+  reduce.addEventListener("change", onScrollFrame);
+  mobile.addEventListener("change", onScrollFrame);
+
+  /* ── GSAP polish (optional enhancement) ── */
+  function initGsap() {
+    if (reduce.matches || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.querySelectorAll(".chapter").forEach((ch) => {
+      const ghost = ch.querySelector(".chapter__ghost");
+      if (!ghost) return;
+      gsap.to(ghost, {
+        x: "-12vw",
+        ease: "none",
+        scrollTrigger: {
+          trigger: ch,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.6
+        }
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      onScrollFrame();
+      initGsap();
+    });
+  } else {
+    onScrollFrame();
+    initGsap();
+  }
+})();
+</script>
+</body>
+</html>
