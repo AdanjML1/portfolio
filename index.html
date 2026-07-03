@@ -8,11 +8,11 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --ui: "DM Sans", system-ui, sans-serif;
+    --ui: "Outfit", system-ui, sans-serif;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
     --hud: #ffffff;
   }
@@ -254,6 +254,23 @@
     height: 100%;
     object-fit: cover;
   }
+  .float--photo,
+  .float--asset {
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .float--photo img {
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 28px 56px rgba(0, 0, 0, 0.38));
+  }
+  .float--asset img {
+    object-fit: contain;
+    object-position: center center;
+    filter: drop-shadow(0 22px 44px rgba(0, 0, 0, 0.32));
+  }
   .float__shadow {
     position: absolute;
     border-radius: 50%;
@@ -270,9 +287,124 @@
   .slide--nebula { --slide-bg: #6b4fbb; }
   .slide--contact { --slide-bg: #14110f; }
 
-  .slide--intro .float--1 { width: clamp(110px, 14vw, 180px); aspect-ratio: 1; top: 18%; left: 12%; }
-  .slide--intro .float--2 { width: clamp(130px, 16vw, 200px); aspect-ratio: 4/5; top: 22%; right: 10%; }
-  .slide--intro .float--3 { width: clamp(90px, 11vw, 140px); aspect-ratio: 1; bottom: 22%; left: 20%; }
+  .slide--intro .slide__inner {
+    max-width: min(94vw, 820px);
+  }
+  .slide--intro .slide__title {
+    font-size: clamp(2.6rem, 8.2vw, 7rem);
+    max-width: 16ch;
+  }
+  .slide--intro .slide__desc {
+    font-size: clamp(1rem, 1.45vw, 1.28rem);
+    max-width: 44ch;
+  }
+  .slide--intro .slide__tags span {
+    font-size: clamp(0.72rem, 0.95vw, 0.88rem);
+    padding: 9px 16px;
+  }
+  @media (min-width: 900px) {
+    .slide--intro .slide__inner {
+      margin-left: clamp(72px, 14vw, 200px);
+      margin-right: clamp(8px, 2vw, 40px);
+      max-width: min(76vw, 620px);
+    }
+    .slide--intro .float--2 {
+      right: clamp(14%, 16vw, 19%);
+      max-width: min(30vw, 520px);
+    }
+    .slide--intro .float--4 {
+      left: clamp(32%, 36vw, 40%);
+      right: auto;
+      top: 10%;
+    }
+    .slide--intro .float--3 {
+      left: clamp(36%, 40vw, 44%);
+      right: auto;
+      top: 56%;
+    }
+    .slide--intro .float__shadow--cloudbig {
+      left: clamp(34%, 38vw, 42%);
+      right: auto;
+      top: 34%;
+    }
+    .slide--intro .float__shadow--cloud {
+      width: clamp(64px, 8vw, 150px);
+      height: clamp(12px, 1.5vw, 24px);
+      left: calc(clamp(36%, 40vw, 44%) + clamp(8px, 1vw, 20px));
+      right: auto;
+      top: 77%;
+    }
+  }
+
+  .slide--intro .float--2 {
+    top: auto;
+    bottom: 0;
+    right: clamp(0%, 2vw, 4%);
+    height: clamp(420px, 86vh, 900px);
+    width: auto;
+    aspect-ratio: 433 / 577;
+    max-width: min(40vw, 640px);
+    z-index: 3;
+  }
+  .slide--intro .float--3 {
+    width: clamp(84px, 11vw, 210px);
+    aspect-ratio: 448 / 557;
+    top: 52%;
+    left: clamp(4%, 5vw, 7%);
+    bottom: auto;
+  }
+  .slide--intro .float--4 {
+    width: clamp(200px, 26vw, 480px);
+    aspect-ratio: 1;
+    top: 6%;
+    left: clamp(22%, 28vw, 36%);
+    z-index: 0;
+  }
+  .slide--intro .float__shadow--photo {
+    display: none;
+  }
+  .slide--intro .float__shadow--cloudbig {
+    width: clamp(130px, 16vw, 280px);
+    height: clamp(22px, 2.8vw, 44px);
+    top: 34%;
+    left: clamp(26%, 32vw, 40%);
+  }
+  .slide--intro .float__shadow--cloud {
+    width: clamp(64px, 8vw, 150px);
+    height: clamp(12px, 1.5vw, 24px);
+    top: 65%;
+    left: calc(clamp(4%, 5vw, 7%) + clamp(8px, 1vw, 16px));
+  }
+
+  @media (min-width: 1600px) {
+    .slide--intro .float--2 {
+      height: min(88vh, 960px);
+      max-width: 540px;
+      right: 17%;
+    }
+    .slide--intro .slide__inner {
+      margin-left: 15vw;
+      margin-right: 32px;
+    }
+    .slide--intro .float--4 {
+      width: min(24vw, 460px);
+      left: 48%;
+      right: auto;
+      top: 8%;
+    }
+    .slide--intro .float--3 {
+      width: min(10vw, 200px);
+      left: 15%;
+      right: auto;
+      top: 35%;
+    }
+    .slide--intro .float__shadow--cloud {
+      width: min(7vw, 140px);
+      height: 18px;
+      left: calc(15% + 0.75vw);
+      top: 57%;
+    }
+  }
 
   .slide--aurora .float--1 { width: clamp(120px, 15vw, 190px); aspect-ratio: 1; top: 16%; right: 14%; }
   .slide--aurora .float--2 { width: clamp(150px, 18vw, 220px); aspect-ratio: 4/5; bottom: 18%; left: 10%; }
@@ -323,7 +455,50 @@
     .hud__tabs { max-width: 100%; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
     .hud__cta { align-self: flex-end; }
     .float { opacity: 0.85; }
-    .slide--intro .float--3 { display: none; }
+    .slide--intro .float--2 {
+      height: min(92vh, calc(100vw * 577 / 433));
+      width: auto;
+      max-width: 100vw;
+      left: 0;
+      right: 0;
+      margin-inline: auto;
+      top: auto;
+      bottom: 0;
+      opacity: 1;
+      z-index: 1;
+    }
+    .slide--intro .slide__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      margin-right: 0;
+      padding-top: max(64px, 9vh);
+      padding-bottom: min(48vh, calc(100vw * 577 / 433 * 0.5));
+      gap: 0;
+    }
+    .slide--intro .slide__title {
+      font-size: clamp(2.1rem, 9.5vw, 2.75rem);
+      line-height: 0.92;
+      max-width: 13ch;
+    }
+    .slide--intro .slide__desc {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      max-width: 34ch;
+    }
+    .slide--intro .slide__tags {
+      margin-top: 12px;
+      gap: 6px;
+    }
+    .slide--intro .slide__tags span {
+      font-size: 0.62rem;
+      padding: 6px 10px;
+    }
+    .slide--intro .float--3,
+    .slide--intro .float--4 { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -372,15 +547,17 @@
   <!-- Inicio — coral tomate (Delassus) -->
   <section class="slide slide--intro" data-bg="#f05a50" aria-label="Inicio">
     <div class="slide__floats" aria-hidden="true">
-      <div class="float float--1" data-mouse="16"><img src="https://picsum.photos/seed/hero-a/360/360" alt="" width="360" height="360" /></div>
-      <div class="float float--2" data-mouse="22"><img src="https://picsum.photos/seed/hero-b/400/500" alt="" width="400" height="500" /></div>
-      <div class="float float--3" data-mouse="12"><img src="https://picsum.photos/seed/hero-c/280/280" alt="" width="280" height="280" /></div>
-      <div class="float__shadow" style="width:140px;height:28px;top:42%;left:16%;" data-mouse="8"></div>
-      <div class="float__shadow" style="width:160px;height:32px;top:48%;right:14%;" data-mouse="10"></div>
+      <div class="float float--2 float--photo" data-mouse="8"><img src="./pictures/inicio/adan.png" alt="Adán de Jesús Moo Lugo" width="433" height="577" /></div>
+      <div class="float float--3 float--asset" data-mouse="14"><img src="./pictures/inicio/cloudsmall.png" alt="" width="448" height="557" /></div>
+      <div class="float float--4 float--asset" data-mouse="20"><img src="./pictures/inicio/cloudbig.png" alt="" width="500" height="500" /></div>
+      <div class="float__shadow float__shadow--cloudbig" data-mouse="6"></div>
+      <div class="float__shadow float__shadow--cloud" data-mouse="14"></div>
+      <div class="float__shadow float__shadow--photo" data-mouse="4"></div>
     </div>
     <div class="slide__inner">
-      <h1 class="slide__title">Desarrollo web con carácter</h1>
-      <p class="slide__desc">Portfolio en construcción. Desliza a la derecha — cada proyecto tiene su propio color, como en una editorial de producto.</p>
+      <h1 class="slide__title">Desarrollador Web mid-level fullstack</h1>
+      <p class="slide__desc">Construyo productos web de punta a punta: interfaz, API y despliegue en la nube.</p>
+      <div class="slide__tags"><span>React</span><span>Node.js</span><span>TypeScript</span><span>Cloud</span></div>
     </div>
   </section>
 
