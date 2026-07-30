@@ -1,0 +1,16 @@
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Plate 1 (top) -->
+  <polygon points="100,164 175,194 325,194 400,164 325,134 175,134" fill="#5b86e6" />
+  <polygon points="100,150 175,120 325,120 400,150 325,180 175,180" fill="#8fb7ff" />
+  <polygon points="175,120 325,120 325,150 175,150" fill="#a9c7ff" opacity="0.55" />
+
+  <!-- Plate 2 (middle) -->
+  <polygon points="100,274 175,304 325,304 400,274 325,244 175,244" fill="#3c5ec2" />
+  <polygon points="100,260 175,230 325,230 400,260 325,290 175,290" fill="#5f86e8" />
+  <polygon points="175,230 325,230 325,260 175,260" fill="#87a7f2" opacity="0.5" />
+
+  <!-- Plate 3 (bottom) -->
+  <polygon points="100,384 175,414 325,414 400,384 325,354 175,354" fill="#212f72" />
+  <polygon points="100,370 175,340 325,340 400,370 325,400 175,400" fill="#34449c" />
+  <polygon points="175,340 325,340 325,370 175,370" fill="#5568c4" opacity="0.5" />
+</svg>

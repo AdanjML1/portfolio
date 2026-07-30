@@ -1,0 +1,20 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- oreja izquierda -->
+  <polygon points="65,150 135,105 150,225 90,250" fill="#4F5B93" />
+  <polygon points="90,155 135,120 143,205" fill="#8892BF" opacity="0.6" />
+
+  <!-- oreja derecha -->
+  <polygon points="335,150 265,105 250,225 310,250" fill="#4F5B93" />
+  <polygon points="310,155 265,120 257,205" fill="#8892BF" opacity="0.6" />
+
+  <!-- cabeza -->
+  <polygon points="200,95 271,124 295,195 271,266 200,295 129,266 105,195 129,124" fill="#777BB4" />
+  <polygon points="200,95 271,124 295,195 200,195 129,124" fill="#A6ABD1" />
+
+  <!-- trompa -->
+  <polygon points="178,255 222,255 232,300 214,345 186,345 168,300" fill="#5F6BA6" />
+  <polygon points="182,258 218,258 224,290 200,290 176,290" fill="#8892BF" opacity="0.55" />
+
+  <!-- ojo -->
+  <circle cx="185" cy="185" r="9" fill="#2B2F52" />
+</svg>

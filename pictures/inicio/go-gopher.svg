@@ -1,0 +1,22 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- orejas -->
+  <polygon points="108,148 148,78 178,152" fill="#0087A8" />
+  <polygon points="118,146 148,100 165,148" fill="#39C4E0" opacity="0.7" />
+  <polygon points="222,152 252,78 292,148" fill="#0087A8" />
+  <polygon points="235,148 252,100 282,146" fill="#39C4E0" opacity="0.7" />
+
+  <!-- cabeza -->
+  <polygon points="200,108 271,137 300,208 271,279 200,308 129,279 100,208 129,137" fill="#00ADD8" />
+  <polygon points="200,108 271,137 300,208 200,208 129,137" fill="#39C4E0" />
+
+  <!-- hocico -->
+  <polygon points="140,228 180,213 220,213 260,228 245,273 155,273" fill="#EAF9FC" />
+
+  <!-- ojos -->
+  <circle cx="168" cy="193" r="9" fill="#06313B" />
+  <circle cx="232" cy="193" r="9" fill="#06313B" />
+
+  <!-- dientes -->
+  <rect x="183" y="262" width="15" height="26" fill="#FFFFFF" />
+  <rect x="202" y="262" width="15" height="26" fill="#FFFFFF" />
+</svg>
